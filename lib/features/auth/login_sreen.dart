@@ -34,8 +34,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authVm = Provider.of<AuthProvider>(context);
-    String email = _emailController.text.toString();
-    String password = _passwordController.text.toString();
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -89,9 +87,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       validator: (value) => Validators.password(value),
                     ),
                     const SizedBox(height: 16),
-                    // if (authVm.isLoading)
-                    //   const CircularProgressIndicator()
-                    // else
+                    if (authVm.isLoading)
+                      const CircularProgressIndicator()
+                    else
                     FilledButton(
                       style: FilledButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
@@ -103,8 +101,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           final success = await authVm.login(
-                            email: email,
-                            password: password,
+                            email: _emailController.text.trim(),
+                            password: _passwordController.text,
                           );
 
                           if (success) {

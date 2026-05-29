@@ -4,7 +4,7 @@ class UserModel {
   final String uid;
   final String username;
   final String email;
-  final DateTime createdAt;
+  final DateTime? createdAt;
   final DateTime? updatedAt;
 
   // create a user model for the app
@@ -12,7 +12,7 @@ class UserModel {
     required this.uid,
     required this.email,
     required this.username,
-    required this.createdAt,
+    this.createdAt,
     this.updatedAt,
   });
 

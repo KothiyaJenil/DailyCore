@@ -36,9 +36,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final authVm = Provider.of<AuthProvider>(context);
-    String username = _usernameController.text.trim();
-    String email = _emailController.text.trim();
-    String password = _passwordController.text.trim();
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -103,54 +100,56 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         validator: (value) => Validators.password(value),
                       ),
                       const SizedBox(height: 16),
-                      // if (authVm.isLoading)
-                      //   const CircularProgressIndicator()
-                      // else
-                      FilledButton(
-                        style: FilledButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 20,
+                      if (authVm.isLoading)
+                        const CircularProgressIndicator()
+                      else
+                        FilledButton(
+                          style: FilledButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                              horizontal: 20,
+                            ),
+                            fixedSize: Size(
+                              MediaQuery.of(context).size.width,
+                              50,
+                            ),
                           ),
-                          fixedSize: Size(
-                            MediaQuery.of(context).size.width,
-                            50,
-                          ),
-                        ),
-                        onPressed: () async {
-                          if (_formKey.currentState!.validate()) {
-                            final success = await authVm.register(
-                              username: username,
-                              email: email,
-                              password: password,
-                            );
-                            if (success) {
-                              Navigator.pushReplacement(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.fade,
-                                  child: LoginScreen(),
-                                ),
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              final success = await authVm.register(
+                                username: _usernameController.text.trim(),
+                                email: _emailController.text.trim(),
+                                password: _passwordController.text,
                               );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(authVm.errorMessage.toString()),
-                                ),
-                              );
+                              if (success) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  PageTransition(
+                                    type: PageTransitionType.fade,
+                                    child: LoginScreen(),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      authVm.errorMessage.toString(),
+                                    ),
+                                  ),
+                                );
+                              }
+                              _usernameController.clear();
+                              _emailController.clear();
+                              _passwordController.clear();
                             }
-                            _usernameController.clear();
-                            _emailController.clear();
-                            _passwordController.clear();
-                          }
-                        },
-                        child: Text(
-                          "SignUp",
-                          style: AppTextStyles.subheading.copyWith(
-                            color: AppColors.onPrimary,
+                          },
+                          child: Text(
+                            "SignUp",
+                            style: AppTextStyles.subheading.copyWith(
+                              color: AppColors.onPrimary,
+                            ),
                           ),
                         ),
-                      ),
                       TextButton(
                         onPressed: () {
                           Navigator.pushReplacement(

@@ -36,6 +36,7 @@ class AuthService {
       if (e.code == "email-already-in-use") {
         throw Exception("Email already exists");
       }
+      debugPrint(e.message);
       throw Exception(e.message);
     }
   }
@@ -46,22 +47,37 @@ class AuthService {
   }) async {
     try {
       final credential = await _firebaseAuth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
+        email: email.trim(),
+        password: password.trim(),
       );
+
+      if(credential.user == null){
+        throw Exception("user not found");
+      }
 
       final snapshot = await _firebaseFirestore
           .collection("user")
           .doc(credential.user!.uid)
           .get();
 
+      if(!snapshot.exists || snapshot.data() == null){
+        throw Exception("user not found");
+      }
+
       final user = UserModel.fromJson(snapshot.data()!);
+
       return user;
     } on FirebaseAuthException catch (e) {
-      if (e.code == "invalid-credential") {
+      if (e.code == "invalid-credential" || e.code == "user-not-found" || e.code == "wrong-password") {
         throw Exception("Invalid email or password");
+      } else if(e.code == "too-many-requests"){
+        throw Exception("too many attempts. Please try again later");
       }
+      debugPrint("Firebase Auth Error: ${e.message}");
       throw Exception("Login Failed");
+    } catch (e) {
+      debugPrint("Error: $e");
+      throw Exception("An unexpected error occurred");
     }
   }
 
