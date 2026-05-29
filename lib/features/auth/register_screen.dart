@@ -2,11 +2,13 @@ import 'package:dailycore/core/constants/App_Colors.dart';
 import 'package:dailycore/core/constants/App_Text_Style.dart';
 import 'package:dailycore/core/util/auth_validators.dart';
 import 'package:dailycore/features/auth/login_sreen.dart';
+import 'package:dailycore/providers/auth_provider.dart';
 import 'package:dailycore/widget/custom_form_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -33,7 +35,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final authVm = Provider.of<AuthViewmodel>(context);
+    final authVm = Provider.of<AuthProvider>(context);
     String username = _usernameController.text.trim();
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
@@ -51,7 +53,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               height: MediaQuery.of(context).size.height / 1.8,
-              child: SvgPicture.asset("assets/images/svg/Healthy_lifestyle.svg"),
+              child: SvgPicture.asset(
+                "assets/images/svg/Healthy_lifestyle.svg",
+              ),
             ),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
@@ -80,67 +84,73 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       const SizedBox(height: 16),
                       CustomTextFormField(
-                          controller: _passwordController,
-                          labelText: "Password",
-                          obscureText: _isHide,
-                          suffixIcon: IconButton(onPressed: (){
+                        controller: _passwordController,
+                        labelText: "Password",
+                        obscureText: _isHide,
+                        suffixIcon: IconButton(
+                          onPressed: () {
                             setState(() {
                               _isHide = !_isHide;
                             });
-                          }, icon: Icon(_isHide ? CupertinoIcons.eye_slash_fill : CupertinoIcons.eye_solid, color: AppColors.primary,)),
-                          validator: (value) => Validators.password(value)
+                          },
+                          icon: Icon(
+                            _isHide
+                                ? CupertinoIcons.eye_slash_fill
+                                : CupertinoIcons.eye_solid,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        validator: (value) => Validators.password(value),
                       ),
                       const SizedBox(height: 16),
                       // if (authVm.isLoading)
                       //   const CircularProgressIndicator()
                       // else
-                        FilledButton(
-                          style: FilledButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 20,
-                            ),
-                            fixedSize: Size(
-                              MediaQuery.of(context).size.width,
-                              50,
-                            ),
+                      FilledButton(
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 20,
                           ),
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              // final success = await authVm.register(
-                              //   username: username,
-                              //   email: email,
-                              //   password: password,
-                              // );
-                              // if (success) {
-                              //   Navigator.pushReplacement(
-                              //     context,
-                              //     PageTransition(
-                              //       type: PageTransitionType.fade,
-                              //       child: LoginScreen(),
-                              //     ),
-                              //   );
-                              // } else {
-                              //   ScaffoldMessenger.of(context).showSnackBar(
-                              //     SnackBar(
-                              //       content: Text(
-                              //         authVm.errMessage.toString() ?? '',
-                              //       ),
-                              //     ),
-                              //   );
-                              // }
-                              _usernameController.clear();
-                              _emailController.clear();
-                              _passwordController.clear();
-                            }
-                          },
-                          child: Text(
-                            "SignUp",
-                            style: AppTextStyles.subheading.copyWith(
-                              color: AppColors.onPrimary,
-                            ),
+                          fixedSize: Size(
+                            MediaQuery.of(context).size.width,
+                            50,
                           ),
                         ),
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            final success = await authVm.register(
+                              username: username,
+                              email: email,
+                              password: password,
+                            );
+                            if (success) {
+                              Navigator.pushReplacement(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.fade,
+                                  child: LoginScreen(),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(authVm.errorMessage.toString()),
+                                ),
+                              );
+                            }
+                            _usernameController.clear();
+                            _emailController.clear();
+                            _passwordController.clear();
+                          }
+                        },
+                        child: Text(
+                          "SignUp",
+                          style: AppTextStyles.subheading.copyWith(
+                            color: AppColors.onPrimary,
+                          ),
+                        ),
+                      ),
                       TextButton(
                         onPressed: () {
                           Navigator.pushReplacement(
