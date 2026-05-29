@@ -22,6 +22,8 @@ class AuthService {
         uid: credential.user!.uid,
         username: username,
         email: email,
+        createdAt: DateTime.now(),
+        updatedAt: null,
       );
 
       await _firebaseFirestore
