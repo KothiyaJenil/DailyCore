@@ -16,7 +16,7 @@ class AuthProvider extends ChangeNotifier {
   UserModel? _currentUser;
   UserModel? get user => _currentUser;
 
-  bool get _isLogin => _currentUser != null;
+  bool get isLogin => _currentUser != null;
 
   Future<void> loadUser() async {
     _currentUser = await _saveUser.getUser();

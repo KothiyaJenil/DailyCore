@@ -27,9 +27,9 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> checkLogin() async {
     final auth = context.read<AuthProvider>();
 
-    // await auth.loadUser();
+    await auth.loadUser();
 
-    if (auth.isLoading) {
+    if (auth.isLogin) {
       Timer(Duration(seconds: 2), () {
         Navigator.pushReplacement(
           context,
