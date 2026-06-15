@@ -1,9 +1,11 @@
 import 'package:dailycore/core/constants/App_Text_Style.dart';
 import 'package:dailycore/features/auth/login_sreen.dart';
+import 'package:dailycore/providers/auth_provider.dart';
 import 'package:dailycore/widget/custom_app_bar.dart';
 import 'package:dailycore/widget/heat_map_daily_tracker.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -13,8 +15,12 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+
+
   @override
   Widget build(BuildContext context) {
+  final auth = context.watch<AuthProvider>();
+  final user = auth.currentUser;
     return Scaffold(
       appBar: CustomAppBar(
         title: "Profile",
@@ -66,9 +72,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("user.username", style: AppTextStyles.heading),
+                              Text(user!.username, style: AppTextStyles.heading),
                               const SizedBox(height: 6),
-                              Text("user.email", style: AppTextStyles.body),
+                              Text(user.email, style: AppTextStyles.body),
                             ],
                           ),
                         ),

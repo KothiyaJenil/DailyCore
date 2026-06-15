@@ -1,11 +1,11 @@
-import 'package:dailycore/core/util/firebase_instance.dart';
+  import 'package:dailycore/core/util/app_instance.dart';
 import 'package:dailycore/data/model/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 class AuthService {
-  final _firebaseAuth = FirebaseInstance.firebaseAuth;
-  final _firebaseFirestore = FirebaseInstance.firebaseFirestore;
+  final _firebaseAuth = AppInstance.firebaseAuth;
+  final _firebaseFirestore = AppInstance.firebaseFirestore;
 
   Future<UserModel> registerUser({
     required String username,
@@ -63,8 +63,8 @@ class AuthService {
       if(!snapshot.exists || snapshot.data() == null){
         throw Exception("user not found");
       }
-
       final user = UserModel.fromJson(snapshot.data()!);
+
 
       return user;
     } on FirebaseAuthException catch (e) {

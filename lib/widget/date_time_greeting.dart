@@ -1,6 +1,8 @@
 import 'package:dailycore/core/constants/App_Text_Style.dart';
+import 'package:dailycore/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import "package:intl/intl.dart";
+import 'package:provider/provider.dart';
 
 (String, String) getGreeting(){
   final hour = DateTime.now().hour;
@@ -24,7 +26,8 @@ class GreetingText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final user = context.read<AuthViewmodel>().currentUser!;
+    final auth = context.watch<AuthProvider>();
+    final user = auth.currentUser!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -35,7 +38,7 @@ class GreetingText extends StatelessWidget {
               TextSpan(text: "${getGreeting().$1}, ", style: AppTextStyles.heading),
               TextSpan(
                 text:
-                "user.username", // Changed redundant greeting to a placeholder name
+                user.username, // Changed redundant greeting to a placeholder name
                 style: AppTextStyles.subheading,
               ),
             ],

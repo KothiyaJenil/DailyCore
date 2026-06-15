@@ -14,13 +14,16 @@ class AuthProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   UserModel? _currentUser;
-  UserModel? get user => _currentUser;
+  UserModel? get currentUser => _currentUser;
 
   bool get isLogin => _currentUser != null;
 
   Future<void> loadUser() async {
     _currentUser = await _saveUser.getUser();
-    notifyListeners();
+    debugPrint("Auth status: ${isLogin ? 'Logged In as ${_currentUser?.email}' : 'Not Logged In'}");
+
+    // notifyListeners is moved to a microtask to avoid "setState() during build" errors
+    Future.microtask(() => notifyListeners());
   }
 
   // register user
@@ -34,14 +37,22 @@ class AuthProvider extends ChangeNotifier {
       _errorMessage = null;
       notifyListeners();
 
-      await _authService.registerUser(
+      // 1. Create account in Firebase
+      final user = await _authService.registerUser(
         username: username,
         email: email,
         password: password,
       );
+
+      // 2. Save user locally for persistence
+      await _saveUser.saveUser(user);
+      // 3. Update local state
+      _currentUser = user;
+      
       return true;
     } catch (e) {
       _errorMessage = e.toString();
+      debugPrint("Registration Error: $e");
       return false;
     } finally {
       _isLoading = false;
@@ -56,11 +67,22 @@ class AuthProvider extends ChangeNotifier {
       _errorMessage = null;
       notifyListeners();
 
-      final user = await _authService.loginUser(email: email, password: password);
+      // 1. Authenticate with Firebase
+      final user = await _authService.loginUser(
+        email: email,
+        password: password,
+      );
+
+      // 2. Save user locally
+      await _saveUser.saveUser(user);
+      
+      // 3. Update local state
       _currentUser = user;
+      
       return true;
     } catch (e) {
       _errorMessage = e.toString();
+      debugPrint("Login Error: $e");
       return false;
     } finally {
       _isLoading = false;
@@ -71,7 +93,8 @@ class AuthProvider extends ChangeNotifier {
   // logout user
   Future<void> logout() async {
     await _authService.logoutUser();
-    await _saveUser.removeUser();
+    await _saveUser.clearUser();
+
     _currentUser = null;
     notifyListeners();
   }

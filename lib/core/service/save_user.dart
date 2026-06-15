@@ -1,34 +1,36 @@
-import 'dart:convert';
-
+import 'package:dailycore/core/util/app_instance.dart';
 import 'package:dailycore/data/model/user_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SaveUser {
-  static const String userKey = 'user';
+  final _box = AppInstance.box;
+  static const String userKey = "user";
 
+  // save user
   Future<void> saveUser(UserModel user) async {
-    final pref = await SharedPreferences.getInstance();
-
-    final jsonData = jsonEncode(user.toJson());
-
-    await pref.setString(userKey, jsonData);
+    await _box.write(userKey, user.toJson());
   }
 
-  Future<UserModel?> getUser() async {
-    final pref = await SharedPreferences.getInstance();
+  // get user
+  UserModel? getUser() {
 
-    final jsonString = pref.getString(userKey);
-
-    if(jsonString == null) {
-      return null;
+    try{
+      final data = _box.read(userKey);
+      if(data != null){
+        return UserModel.fromJson(Map<String, dynamic>.from(data));
+      }
+    } catch (e){
+      print("error reading user from storage: $e");
     }
 
-    final json = jsonDecode(jsonString);
-    return UserModel.fromJson(json);
+    return null;
   }
 
-  Future<void> removeUser() async {
-    final pref = await SharedPreferences.getInstance();
-    await pref.remove(userKey);
+  Future<void> clearUser() async {
+    await _box.remove(userKey);
   }
+
+  bool isLogginIn(){
+    return _box.hasData(userKey);
+  }
+
 }

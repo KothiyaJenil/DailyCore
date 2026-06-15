@@ -147,6 +147,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       child: const Text("Create an account"),
                     ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: const CustomBottomNavbar(),
+                          ),
+                        );
+                      },
+                      child: const Text("home"),
+                    ),
                   ],
                 ),
               ),

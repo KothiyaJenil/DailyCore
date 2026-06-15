@@ -21,16 +21,21 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    checkLogin();
+    // Use WidgetsBinding to wait until the build is complete
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkLogin();
+    });
   }
 
   Future<void> checkLogin() async {
     final auth = context.read<AuthProvider>();
-
     await auth.loadUser();
+
+    await Future.delayed(const Duration(seconds: 2));
 
     if (auth.isLogin) {
       Timer(Duration(seconds: 2), () {
+        if (!mounted) return;
         Navigator.pushReplacement(
           context,
           PageTransition(
@@ -42,6 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
       });
     } else {
       Timer(Duration(seconds: 2), () {
+        if (!mounted) return;
         Navigator.pushReplacement(
           context,
           PageTransition(

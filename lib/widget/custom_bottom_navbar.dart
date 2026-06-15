@@ -13,7 +13,7 @@ class CustomBottomNavbar extends StatefulWidget {
 }
 
 class _CustomBottomNavbarState extends State<CustomBottomNavbar> {
-    int _currentIndex = 0;
+    int _currentIndex = 1;
     final List<Widget> _screens = const [
       HomeScreen(),
       RoutineScreen(),
